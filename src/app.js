@@ -9,16 +9,36 @@ const path = require('path');
 const http = require('http');
 
 
+var indexRouter = require('./routers/index.js');
+var usersRouter = require('./routers/users.js');
+var materiaRouter = require('./routers/materia.js');
+var notaRouter = require('./routers/nota.js');
+var imagenRouter = require('./routers/file.js');
+var calendarRouter = require('./routers/calendario.js');
+
 const cors = require('cors')
 
 const app = express();
 
 app.use(express.json());
 app.use(cors())
-app.use('/api/users', userRoutes);
-app.use('/api/proyecto', proyectoRouter);
-app.use('/api/sala', salaRouter);
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/materia', materiaRouter);
+app.use('/nota', notaRouter);
+app.use('/file', imagenRouter);
+app.use('/calendario', calendarRouter);
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+
+// app.use('/api/users', userRoutes);
+// app.use('/api/proyecto', proyectoRouter);
+// app.use('/api/sala', salaRouter);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
+
 
 const server = http.createServer(app);
 const io = socketIO(server, {

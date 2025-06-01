@@ -3,45 +3,124 @@ const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
-    const user = await prisma.usuario.create({
+    // Crea profesor
+    const profesor = await prisma.usuario.create({
         data: {
-            usuario: 'admin',
-            email: 'a@g.com',
+            usuario: 'profe1',
+            email: 'profesor@g.com',
             password: await bcrypt.hash('123', 10),
-            proyectos: {
+            esProfesor: true,
+            materia: {
+                create: [{
+                    nombre: 'Matemática Avanzada',
+                    color: 'azul',
+                    notas: {
+                        create: [{
+                                titulo: 'Tema 1',
+                                contenido: 'Introducción al cálculo diferencial',
+                                contenido_copia: 'Introducción al cálculo diferencial',
+                                mermaid: 'graph TD; A-->B; B-->C;',
+                                imagenes: {
+                                    create: [
+                                        { ruta: 'uploads/imagenes/tema1-img1.png' },
+                                        { ruta: 'uploads/imagenes/tema1-img2.png' },
+                                    ],
+                                },
+                                audios: {
+                                    create: [
+                                        { ruta: 'uploads/audios/tema1-audio1.mp3' },
+                                    ],
+                                },
+                            },
+                            {
+                                titulo: 'Tema 2',
+                                contenido: 'Derivadas e integrales',
+                                contenido_copia: 'Derivadas e integrales',
+
+                                mermaid: 'graph LR; X-->Y; Y-->Z;',
+                                imagenes: {
+                                    create: [
+                                        { ruta: 'uploads/imagenes/tema2-img1.png' },
+                                    ],
+                                },
+                            },
+                        ],
+                    },
+                }, ],
+            },
+            calendario: {
                 create: [
-                    { nombre: 'Proyecto 1', diagrama: 'afjhrgfbvjbdcjabebsjhjbsdjbsc' },
-                    { nombre: 'Proyecto 2', diagrama: 'afjhrgfbvjbdcjabebsjhjbsdjbscgtyht64ju6t465b4d5fge64dgt' },
+                    { fecha: new Date('2025-06-01T10:00:00.000Z'), evento: 'Clase de repaso' },
+                    { fecha: new Date('2025-06-15T10:00:00.000Z'), evento: 'Examen final' },
                 ],
             },
         },
-        include: {
-            proyectos: true,
-        },
     });
 
-    await prisma.usuario.create({
+    // Alumno 1
+    const alumno1 = await prisma.usuario.create({
         data: {
-            usuario: 'admin2',
-            email: 'b@g.com',
+            usuario: 'alumno1',
+            email: 'alumno1@g.com',
             password: await bcrypt.hash('123', 10),
-            proyectos: {
-                create: [
-                    { nombre: 'Proyecto A', diagrama: 'afjhrgfbvjbdcjabebsjhjbsdjbsc' },
-                    { nombre: 'Proyecto B', diagrama: 'afjhrgfbvjbdcjabebsjhjbsdjbscgtyht64ju6t465b4d5fge64dgt' },
-                ],
+            esProfesor: false,
+            materia: {
+                create: [{
+                    nombre: 'Historia',
+                    color: 'azul',
+                    notas: {
+                        create: [{
+                                titulo: 'Primera nota',
+                                contenido: 'Edad Media y Renacimiento',
+                                contenido_copia: 'Edad',
+
+                                mermaid: 'graph TD; Edad_Media-->Renacimiento;',
+                            },
+                            {
+                                titulo: 'Segunda nota',
+                                contenido: 'Revolución Francesa',
+                                contenido_copia: 'Revolución Francesa'
+
+                            },
+                        ],
+                    },
+                }, ],
             },
         },
-        include: {
-            proyectos: true,
+    });
+
+    // Alumno 2
+    const alumno2 = await prisma.usuario.create({
+        data: {
+            usuario: 'alumno2',
+            email: 'alumno2@g.com',
+            password: await bcrypt.hash('123', 10),
+            esProfesor: false,
+            materia: {
+                create: [{
+                    nombre: 'Física',
+                    color: 'azul',
+                    notas: {
+                        create: [{
+                            titulo: 'Movimiento rectilíneo',
+                            contenido: 'Velocidad, tiempo y aceleración',
+                            contenido_copia: 'Velocidad, tiempo y aceleración',
+
+                            audios: {
+                                create: [{ ruta: 'uploads/audios/movimiento1.mp3' }],
+                            },
+                        }, ],
+                    },
+                }, ],
+            },
         },
     });
 
-    console.log('Usuario con proyectos creados:', user);
+    console.log('Usuarios creados con sus materias, notas, imágenes y audios.');
 }
 
 main()
-    .catch(e => {
+    .catch((e) => {
         console.error(e);
         process.exit(1);
     })

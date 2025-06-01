@@ -14,45 +14,67 @@ datasource db {
 }
 
 model Usuario {
-  id        Int      @id @default(autoincrement())
-  usuario   String   @unique
-  email     String   @unique
-  password  String   
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  proyectos   Proyecto[] 
-  usuarioSalas  UsuarioSala[]
+  id         Int         @id @default(autoincrement())
+  usuario    String      @unique
+  email      String      @unique
+  password   String
+  esProfesor Boolean     @default(false)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  materia     Materia[]
+  calendario  Calendario[]
 }
 
-model Proyecto {
-  id          Int        @id @default(autoincrement())
-  nombre      String
-  usuarioId   Int
-  usuario     Usuario    @relation(fields: [usuarioId], references: [id])
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  diagrama      String?
-  imagenUrl   String?
-  sala          Sala?
-}
-
-model Sala {
-  id          Int           @id @default(autoincrement())
-  codigo      String        @unique
-  proyectoId  Int           @unique
-  proyecto    Proyecto      @relation(fields: [proyectoId], references: [id])
-  activa      Boolean       @default(true)
-  createdAt    DateTime      @default(now())
-  miembros    UsuarioSala[] 
-}
-
-model UsuarioSala {
+model Materia {
   id         Int       @id @default(autoincrement())
-  salaId     Int
+  nombre     String
+  color     String
   usuarioId  Int
-
-  sala       Sala      @relation(fields: [salaId], references: [id])
   usuario    Usuario   @relation(fields: [usuarioId], references: [id])
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
-  @@unique([salaId, usuarioId])
+  notas      Nota[]
+}
+
+model Nota {
+  id         Int       @id @default(autoincrement())
+  titulo     String
+  contenido  String
+  contenido_copia  String
+  mermaid    String?  
+  materiaId  Int
+  materia    Materia   @relation(fields: [materiaId], references: [id])
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  imagenes   Imagen[]  
+  audios     Audio[]  
+}
+
+model Imagen {
+  id        Int     @id @default(autoincrement())
+  ruta      String 
+  notaId    Int
+  nota      Nota    @relation(fields: [notaId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Audio {
+  id        Int     @id @default(autoincrement())
+  ruta      String 
+  notaId    Int
+  nota      Nota    @relation(fields: [notaId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Calendario {
+  id         Int       @id @default(autoincrement())
+  fecha      DateTime
+  evento     String
+  usuarioId  Int
+  usuario    Usuario   @relation(fields: [usuarioId], references: [id])
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Subir Audio</title>
+</head>
+
+<body>
+    <h1>Subir Audio</h1>
+
+    <form action="http://localhost:3000/file/audio" method="POST" enctype="multipart/form-data">
+        <label for="notaid">ID de Nota:</label>
+        <input type="number" name="notaid" id="notaid" required><br><br>
+
+        <label for="audioData">Archivo de audio:</label>
+        <input type="file" name="audioData" id="audioData" accept="audio/*" required><br><br>
+
+        <button type="submit">Subir</button>
+    </form>
+</body>
+
+</html>
