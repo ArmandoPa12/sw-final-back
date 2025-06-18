@@ -27,10 +27,9 @@ async function main() {
                                     ],
                                 },
                                 audios: {
-                                    create: [{
-                                        ruta: 'uploads/audios/tema1-audio1.mp3',
-                                        transcripcion: 'none'
-                                    }, ],
+                                    create: [
+                                        { ruta: 'uploads/audios/tema1-audio1.mp3' },
+                                    ],
                                 },
                             },
                             {
@@ -59,66 +58,63 @@ async function main() {
     });
 
     // Alumno 1
-    const alumno1 = await prisma.usuario.create({
-        data: {
-            usuario: 'alumno1',
-            email: 'alumno1@g.com',
-            password: await bcrypt.hash('123', 10),
-            esProfesor: false,
-            materia: {
-                create: [{
-                    nombre: 'Historia',
-                    color: 'azul',
-                    notas: {
-                        create: [{
-                                titulo: 'Primera nota',
-                                contenido: 'Edad Media y Renacimiento',
-                                contenido_copia: 'Edad',
+    // const alumno1 = await prisma.usuario.create({
+    //     data: {
+    //         usuario: 'alumno1',
+    //         email: 'alumno1@g.com',
+    //         password: await bcrypt.hash('123', 10),
+    //         esProfesor: false,
+    //         materia: {
+    //             create: [{
+    //                 nombre: 'Historia',
+    //                 color: 'azul',
+    //                 notas: {
+    //                     create: [{
+    //                             titulo: 'Primera nota',
+    //                             contenido: 'Edad Media y Renacimiento',
+    //                             contenido_copia: 'Edad',
 
-                                mermaid: 'graph TD; Edad_Media-->Renacimiento;',
-                            },
-                            {
-                                titulo: 'Segunda nota',
-                                contenido: 'Revolución Francesa',
-                                contenido_copia: 'Revolución Francesa'
+    //                             mermaid: 'graph TD; Edad_Media-->Renacimiento;',
+    //                         },
+    //                         {
+    //                             titulo: 'Segunda nota',
+    //                             contenido: 'Revolución Francesa',
+    //                             contenido_copia: 'Revolución Francesa'
 
-                            },
-                        ],
-                    },
-                }, ],
-            },
-        },
-    });
+    //                         },
+    //                     ],
+    //                 },
+    //             }, ],
+    //         },
+    //     },
+    // });
 
-    // Alumno 2
-    const alumno2 = await prisma.usuario.create({
-        data: {
-            usuario: 'alumno2',
-            email: 'alumno2@g.com',
-            password: await bcrypt.hash('123', 10),
-            esProfesor: false,
-            materia: {
-                create: [{
-                    nombre: 'Física',
-                    color: 'azul',
-                    notas: {
-                        create: [{
-                            titulo: 'Movimiento rectilíneo',
-                            contenido: 'Velocidad, tiempo y aceleración',
-                            contenido_copia: 'Velocidad, tiempo y aceleración',
+    // // Alumno 2
+    // const alumno2 = await prisma.usuario.create({
+    //     data: {
+    //         usuario: 'alumno2',
+    //         email: 'alumno2@g.com',
+    //         password: await bcrypt.hash('123', 10),
+    //         esProfesor: false,
+    //         materia: {
+    //             create: [{
+    //                 nombre: 'Física',
+    //                 color: 'azul',
+    //                 notas: {
+    //                     create: [{
+    //                         titulo: 'Movimiento rectilíneo',
+    //                         contenido: 'Velocidad, tiempo y aceleración',
+    //                         contenido_copia: 'Velocidad, tiempo y aceleración',
 
-                            audios: {
-                                create: [{
-                                    ruta: 'uploads/audios/movimiento1.mp3',
-                                    transcripcion: 'none'
-                                }],
-                            },
-                        }, ],
-                    },
-                }, ],
-            },
-        },
-    });
+    //                         audios: {
+    //                             create: [{ ruta: 'uploads/audios/movimiento1.mp3' }],
+    //                         },
+    //                     }, ],
+    //                 },
+    //             }, ],
+    //         },
+    //     },
+    // });
 
     console.log('Usuarios creados con sus materias, notas, imágenes y audios.');
 }

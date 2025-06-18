@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 
-exports.createImage = async (req, res) => {
+exports.createImage = async(req, res) => {
     const { notaid } = req.body;
     const file = req.file;
 
@@ -14,14 +14,14 @@ exports.createImage = async (req, res) => {
 
     const uploadsDir = path.join(__dirname, '..', 'uploads');
     const extension = path.extname(file.originalname);
-    const fileName =  `${Date.now()}${extension}`;
+    const fileName = `${Date.now()}${extension}`;
     const filePath = path.join(uploadsDir, fileName);
 
     if (!fs.existsSync(uploadsDir)) {
         fs.mkdirSync(uploadsDir);
     }
 
-    fs.writeFile(filePath, file.buffer, async (err) => {
+    fs.writeFile(filePath, file.buffer, async(err) => {
         if (err) {
             console.error('Error al guardar la imagen:', err);
             return res.status(500).json({ error: 'Error al guardar la imagen.' });
@@ -50,15 +50,15 @@ exports.createImage = async (req, res) => {
                 imagen: nuevaImagen
             });
 
-        } catch (error) {        
-            res.status(400).json({ error: error.message });            
+        } catch (error) {
+            res.status(400).json({ error: error.message });
         }
     });
 };
 
 
 
-exports.deleteImagen = async (req, res) => {
+exports.deleteImagen = async(req, res) => {
     const { notaId, imagenId } = req.params;
 
 
@@ -67,7 +67,7 @@ exports.deleteImagen = async (req, res) => {
             where: { id: Number(notaId) },
             include: {
                 imagenes: true
-            }   
+            }
         });
 
         if (!nota) {
@@ -97,8 +97,22 @@ exports.deleteImagen = async (req, res) => {
 };
 
 
+exports.getAllAudios = async (req, res) => {
+    try {
+        const audios = await prisma.audio.findMany({            
+            orderBy: {
+                id: 'desc' 
+            }
+        });
 
-exports.createAudio = async (req, res) => {
+        return res.status(200).json(audios);
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
+
+
+exports.createAudio = async(req, res) => {
     const { notaid } = req.body;
     const file = req.file;
 
@@ -115,7 +129,7 @@ exports.createAudio = async (req, res) => {
         fs.mkdirSync(uploadsDir);
     }
 
-    fs.writeFile(filePath, file.buffer, async (err) => {
+    fs.writeFile(filePath, file.buffer, async(err) => {
         if (err) {
             console.error('Error al guardar el audio:', err);
             return res.status(500).json({ error: 'Error al guardar el audio.' });
@@ -135,6 +149,7 @@ exports.createAudio = async (req, res) => {
             const nuevoAudio = await prisma.audio.create({
                 data: {
                     ruta: audioUrl,
+                    transcripcion: '',
                     nota: { connect: { id: Number(notaid) } }
                 }
             });
@@ -150,8 +165,39 @@ exports.createAudio = async (req, res) => {
     });
 };
 
+exports.updateAudioTranscripcion = async (req, res) => {
+    const { id } = req.params;
+    const { transcripcion } = req.body; 
 
-exports.deleteAudio = async (req, res) => {
+    try {
+        const audioExistente = await prisma.audio.findUnique({
+            where: { id: Number(id) }
+        });
+
+        if (!audioExistente) {
+            return res.status(404).json({ error: 'Audio no encontrado' });
+        }
+
+        const audioActualizado = await prisma.audio.update({
+            where: { id: Number(id) },
+            data: {
+                transcripcion: transcripcion ?? audioExistente.transcripcion
+            }
+        });
+
+        return res.status(200).json({
+            mensaje: 'Transcripción actualizada correctamente',
+            audio: audioActualizado
+        });
+
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
+
+
+
+exports.deleteAudio = async(req, res) => {
     const { notaId, audioId } = req.params;
 
     try {

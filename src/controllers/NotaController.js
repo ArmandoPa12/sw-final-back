@@ -9,7 +9,12 @@ exports.getAllNotas = async(req, res) => {
         const materia = await prisma.materia.findUnique({
             where: { id: materiaId },
             include: {
-                notas: true
+                notas: {
+                    include: {
+                audios: true,
+                imagenes: true
+            }
+                }
             }
         });
 
@@ -68,7 +73,7 @@ exports.createNota = async(req, res) => {
             data: {
                 titulo,
                 contenido,
-                contenido_copia: contenido,
+                contenido_copia: '',
                 materia: { connect: { id: materiaId } }
             }
         });
@@ -83,7 +88,7 @@ exports.createNota = async(req, res) => {
 
 // //------------------
 exports.updateNota = async (req, res) => {
-    const { titulo, contenido, mermaid } = req.body;
+    const { titulo, contenido, mermaid, contenido_copia } = req.body;
     const notaIda = parseInt(req.params.id);
 
 
@@ -101,7 +106,7 @@ exports.updateNota = async (req, res) => {
             data: {
                 titulo: titulo && titulo.trim() !== '' ? titulo : notaExistente.titulo,
                 contenido: contenido ?? notaExistente.contenido,
-                contenido_copia: contenido ?? notaExistente.contenido_copia,
+                contenido_copia: contenido_copia ?? notaExistente.contenido_copia,
                 mermaid: mermaid ?? notaExistente.mermaid
             }
         });

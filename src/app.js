@@ -2,8 +2,6 @@ require('dotenv').config();
 const express = require('express');
 
 const userRoutes = require('../src/routers/userRouter');
-const proyectoRouter = require('../src/routers/proyectoRouter');
-const salaRouter = require('../src/routers/salaRouter');
 const socketIO = require('socket.io');
 const path = require('path');
 const http = require('http');
@@ -32,10 +30,12 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 
-// app.use('/api/users', userRoutes);
+app.use('/api/users', userRoutes);
 // app.use('/api/proyecto', proyectoRouter);
 // app.use('/api/sala', salaRouter);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/audio', express.static(path.join(__dirname, 'audio')));
+
 
 
 
