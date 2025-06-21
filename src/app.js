@@ -13,6 +13,8 @@ var materiaRouter = require('./routers/materia.js');
 var notaRouter = require('./routers/nota.js');
 var imagenRouter = require('./routers/file.js');
 var calendarRouter = require('./routers/calendario.js');
+var planRouter = require('./routers/plan.js');
+
 
 const cors = require('cors')
 
@@ -26,6 +28,9 @@ app.use('/materia', materiaRouter);
 app.use('/nota', notaRouter);
 app.use('/file', imagenRouter);
 app.use('/calendario', calendarRouter);
+app.use('/plan', planRouter);
+
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 

@@ -3,124 +3,194 @@ const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
-    // Crea profesor
-    const profesor = await prisma.usuario.create({
-        data: {
-            usuario: 'profe1',
-            email: 'profesor@g.com',
-            password: await bcrypt.hash('123', 10),
-            esProfesor: true,
-            materia: {
-                create: [{
-                    nombre: 'Matemática Avanzada',
-                    color: 'secondary',
-                    notas: {
-                        create: [{
-                                titulo: 'Tema 1',
-                                contenido: '<p>prueba nueva</p>',
-                                contenido_copia: '<p>prueba nueva</p>',
-                                mermaid: 'graph TD; A-->B; B-->C;',
-                                imagenes: {
-                                    create: [
-                                        { ruta: 'uploads/imagenes/tema1-img1.png' },
-                                        { ruta: 'uploads/imagenes/tema1-img2.png' },
-                                    ],
-                                },
-                                audios: {
-                                    create: [{
-                                        ruta: 'uploads/audios/tema1-audio1.mp3',
-                                        transcripcion: 'none'
-                                    }, ],
-                                },
-                            },
-                            {
-                                titulo: 'Tema 2',
-                                contenido: 'Derivadas e integrales',
-                                contenido_copia: 'Derivadas e integrales',
 
-                                mermaid: 'graph LR; X-->Y; Y-->Z;',
-                                imagenes: {
-                                    create: [
-                                        { ruta: 'uploads/imagenes/tema2-img1.png' },
-                                    ],
-                                },
-                            },
-                        ],
-                    },
-                }, ],
-            },
-            calendario: {
+    //caracterisiticas de planes
+    const dibujar = await prisma.caracteristica.create({
+        data: {
+            nombre: 'dibujar',
+            descripcion: 'Permite dibujar',
+        },
+    });
+    const crear_materia = await prisma.caracteristica.create({
+        data: {
+            nombre: 'Crear Materia',
+            descripcion: 'Permite registrar una nueva materia con nombre y color para organizar las clases.',
+        },
+    });
+    const crear_clase_nota = await prisma.caracteristica.create({
+        data: {
+            nombre: 'registrar nota',
+            descripcion: 'Permite registrar una nueva nota',
+        },
+    });
+    const grabar_audio = await prisma.caracteristica.create({
+        data: {
+            nombre: 'grabar audio',
+            descripcion: 'Permite grabar audio',
+        },
+    });
+    const escribir_apunte = await prisma.caracteristica.create({
+        data: {
+            nombre: 'Escribir Apunte en Clase',
+            descripcion: 'Permite escribir contenido con herramientas de formato (negrita, títulos, estilos).',
+        },
+    });
+    const resumen_ia = await prisma.caracteristica.create({
+        data: {
+            nombre: 'resumir el contenido con IA',
+            descripcion: 'Usa IA para generar un resumen del texto o audio asociado a la clase.',
+        },
+    });
+    const mapa_ia = await prisma.caracteristica.create({
+        data: {
+            nombre: 'Generar Mapa Mental',
+            descripcion: 'Crea un mapa mental visual a partir de apuntes o ideas clave.',
+        },
+    });
+    const calendario_personal = await prisma.caracteristica.create({
+        data: {
+            nombre: 'Ver Calendario Personal',
+            descripcion: 'Muestra eventos detectados por IA o creados manualmente',
+        },
+    });
+    const exportarPDF = await prisma.caracteristica.create({
+        data: {
+            nombre: 'exportar_pdf',
+            descripcion: 'Permite exportar notas en formato PDF',
+        },
+    });
+    const notificaciones = await prisma.caracteristica.create({
+        data: {
+            nombre: 'Recibir Notificaciones',
+            descripcion: 'Almacena y muestra alertas de eventos detectados o tareas pendientes.',
+        },
+    });
+    const actualizar_suscription = await prisma.caracteristica.create({
+        data: {
+            nombre: 'Actualizar Suscripción',
+            descripcion: 'Permite cambiar de plan mediante sistema de pago. Habilita las funciones del nuevo plan inmediatamente.',
+        },
+    });
+
+    //tipos de planes
+    const planGratuito = await prisma.plan.create({
+        data: {
+            nombre: 'Gratuito',
+            descripcion: 'Plan gratuito con funciones limitadas',
+            precioMensual: 0,
+            caracteristicas: {
                 create: [
-                    { fecha: new Date('2025-06-01T10:00:00.000Z'), evento: 'Clase de repaso' },
-                    { fecha: new Date('2025-06-15T10:00:00.000Z'), evento: 'Examen final' },
+                    { caracteristicaId: crear_clase_nota.id },
+                    { caracteristicaId: crear_materia.id },
+                    { caracteristicaId: escribir_apunte.id },
+                    { caracteristicaId: actualizar_suscription.id },
+                ],
+            },
+        },
+    });
+    const planBasico = await prisma.plan.create({
+        data: {
+            nombre: 'Basico',
+            descripcion: 'Plan basico con funciones limitadas',
+            precioMensual: 15,
+            caracteristicas: {
+                create: [
+                    { caracteristicaId: crear_materia.id },
+                    { caracteristicaId: crear_clase_nota.id },
+                    { caracteristicaId: grabar_audio.id },
+                    { caracteristicaId: escribir_apunte.id },
+                    { caracteristicaId: dibujar.id },
+                    { caracteristicaId: calendario_personal.id },
+                    { caracteristicaId: exportarPDF.id },
+                    { caracteristicaId: notificaciones.id },
+                    { caracteristicaId: actualizar_suscription.id },
+
                 ],
             },
         },
     });
 
-    // Alumno 1
-    const alumno1 = await prisma.usuario.create({
+    const planPremium = await prisma.plan.create({
         data: {
-            usuario: 'alumno1',
-            email: 'alumno1@g.com',
-            password: await bcrypt.hash('123', 10),
-            esProfesor: false,
-            materia: {
-                create: [{
-                    nombre: 'Historia',
-                    color: 'azul',
-                    notas: {
-                        create: [{
-                                titulo: 'Primera nota',
-                                contenido: 'Edad Media y Renacimiento',
-                                contenido_copia: 'Edad',
-
-                                mermaid: 'graph TD; Edad_Media-->Renacimiento;',
-                            },
-                            {
-                                titulo: 'Segunda nota',
-                                contenido: 'Revolución Francesa',
-                                contenido_copia: 'Revolución Francesa'
-
-                            },
-                        ],
-                    },
-                }, ],
+            nombre: 'Premium',
+            descripcion: 'Acceso completo a todas las funciones',
+            precioMensual: 30,
+            caracteristicas: {
+                create: [
+                    { caracteristicaId: crear_materia.id },
+                    { caracteristicaId: crear_clase_nota.id },
+                    { caracteristicaId: grabar_audio.id },
+                    { caracteristicaId: escribir_apunte.id },
+                    { caracteristicaId: dibujar.id },
+                    { caracteristicaId: resumen_ia.id },
+                    { caracteristicaId: mapa_ia.id },
+                    { caracteristicaId: calendario_personal.id },
+                    { caracteristicaId: exportarPDF.id },
+                    { caracteristicaId: notificaciones.id },
+                ],
             },
         },
     });
 
-    // Alumno 2
-    const alumno2 = await prisma.usuario.create({
-        data: {
-            usuario: 'alumno2',
-            email: 'alumno2@g.com',
-            password: await bcrypt.hash('123', 10),
-            esProfesor: false,
-            materia: {
-                create: [{
-                    nombre: 'Física',
-                    color: 'azul',
-                    notas: {
-                        create: [{
-                            titulo: 'Movimiento rectilíneo',
-                            contenido: 'Velocidad, tiempo y aceleración',
-                            contenido_copia: 'Velocidad, tiempo y aceleración',
 
-                            audios: {
-                                create: [{
-                                    ruta: 'uploads/audios/movimiento1.mp3',
-                                    transcripcion: 'none'
-                                }],
-                            },
-                        }, ],
-                    },
-                }, ],
-            },
+    //usuario final
+    const usuarioPremiun = await prisma.usuario.create({
+        data: {
+            usuario: 'cliente_premium',
+            email: 'p@g.com',
+            password: await bcrypt.hash('123', 10),
+            esProfesor: true,
+            planId: planPremium.id,
         },
     });
 
-    console.log('Usuarios creados con sus materias, notas, imágenes y audios.');
+    const usuarioBasico = await prisma.usuario.create({
+        data: {
+            usuario: 'cliente_basico',
+            email: 'b@g.com',
+            password: await bcrypt.hash('123', 10),
+            esProfesor: false,
+            planId: planBasico.id,
+        },
+    });
+
+    const usuarioGratuito = await prisma.usuario.create({
+        data: {
+            usuario: 'cliente_gratuito',
+            email: 'g@g.com',
+            password: await bcrypt.hash('123', 10),
+            esProfesor: false,
+            planId: planGratuito.id,
+        },
+    });
+
+
+    await prisma.suscripcion.create({
+        data: {
+            usuarioId: usuarioPremiun.id,
+            planId: planPremium.id,
+            activo: true,
+            fechaInicio: new Date(),
+        },
+    });
+    await prisma.suscripcion.create({
+        data: {
+            usuarioId: usuarioBasico.id,
+            planId: planBasico.id,
+            activo: true,
+            fechaInicio: new Date(),
+        },
+    });
+    await prisma.suscripcion.create({
+        data: {
+            usuarioId: usuarioGratuito.id,
+            planId: planGratuito.id,
+            activo: true,
+            fechaInicio: new Date(),
+        },
+    });
+
+    console.log('semilla exitoa');
 }
 
 main()

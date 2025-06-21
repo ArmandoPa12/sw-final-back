@@ -15,7 +15,7 @@ function generateToke(userId) {
 //get all
 exports.getAllUsers = async(req, res) => {
     const users = await prisma.usuario.findMany({
-        select: { id: true, usuario: true, email: true, createdAt: true }
+        select: { id: true, usuario: true, email: true, createdAt: true, plan: true }
     });
     res.json(users);
 };
@@ -27,10 +27,30 @@ exports.createUser = async(req, res) => {
     try {
         const hash = await bcrypt.hash(password, 10);
 
-        const user = await prisma.usuario.create({
-            data: { usuario, email, password: hash },
+        const planGratuito = await prisma.plan.findUnique({
+            where: { nombre: 'Gratuito' }
         });
 
+        if (!planGratuito) {
+            return res.status(500).json({ error: 'El plan gratuito no existe' });
+        }
+
+        const user = await prisma.usuario.create({
+            data: {
+                usuario,
+                email,
+                password: hash,
+                planId: planGratuito.id
+            }
+        });
+        await prisma.suscripcion.create({
+            data: {
+                usuarioId: user.id,
+                planId: planGratuito.id,
+                activo: true,
+                fechaInicio: new Date()
+            }
+        });
         const token = generateToke(user.id);
 
         res.status(201).json({
@@ -53,7 +73,8 @@ exports.getUser = async(req, res) => {
         const user = await prisma.usuario.findUnique({
             where: { id: userId },
             include: {
-                proyectos: true
+                proyectos: true,
+                plan: true
             }
         });
         if (!user) {
@@ -87,6 +108,7 @@ exports.loginUser = async(req, res) => {
                 id: user.id,
                 usuario: user.usuario,
                 email: user.email,
+                profesor: user.esProfesor,
             },
             token,
         });

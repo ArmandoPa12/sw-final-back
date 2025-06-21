@@ -24,6 +24,10 @@ model Usuario {
 
   materia     Materia[]
   calendario  Calendario[]
+  
+  planId     Int?
+  plan       Plan?       @relation(fields: [planId], references: [id])
+  suscripciones Suscripcion[]
 }
 
 model Materia {
@@ -78,4 +82,43 @@ model Calendario {
   usuario    Usuario   @relation(fields: [usuarioId], references: [id])
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+}
+
+model Plan {
+  id          Int                   @id @default(autoincrement())
+  nombre      String                @unique
+  descripcion String?
+  precioMensual Float
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  usuarios      Usuario[]
+  suscripciones Suscripcion[]
+  caracteristicas PlanCaracteristica[]
+}
+
+model Caracteristica {
+  id          Int                   @id @default(autoincrement())
+  nombre      String                @unique
+  descripcion String?
+  planes      PlanCaracteristica[]
+}
+
+model PlanCaracteristica {
+  id               Int             @id @default(autoincrement())
+  planId           Int
+  caracteristicaId Int
+  plan             Plan            @relation(fields: [planId], references: [id])
+  caracteristica   Caracteristica @relation(fields: [caracteristicaId], references: [id])
+}
+
+model Suscripcion {
+  id          Int       @id @default(autoincrement())
+  usuarioId   Int
+  usuario     Usuario   @relation(fields: [usuarioId], references: [id])
+  planId      Int
+  plan        Plan      @relation(fields: [planId], references: [id])
+  activo      Boolean   @default(true)
+  fechaInicio DateTime  @default(now())
+  fechaFin    DateTime?
 }
